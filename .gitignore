@@ -1,0 +1,19 @@
+# Terraform
+.terraform/
+*.tfstate*
+
+# Maven
+target/
+
+# Logs
+*.log
+
+# OS
+*.exe
+.DS_Store
+
+# Docker
+*.tar
+
+# Database
+*.db

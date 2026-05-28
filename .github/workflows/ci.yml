@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-test-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. LẤY CODE
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. JAVA 21
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # 3. BUILD
+      - name: Build Maven
+        run: mvn clean package -DskipTests
+
+      # 4. TEST
+      - name: Run Test
+        run: mvn test
+
+      # 5. BUILD DOCKER
+      - name: Docker build
+        run: docker build -t demo-app .
+
+  deploy-staging:
+    needs: build-test-docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy Staging
+        run: echo "Deploy to STAGING success"
+
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production   # 👈 manual approval
+
+    steps:
+      - name: Deploy Production
+        run: echo "Deploy to PRODUCTION success"
