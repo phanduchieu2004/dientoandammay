@@ -10,44 +10,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. LẤY CODE
+      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. JAVA 21
+      # 2. Java 21
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      # 3. BUILD
+      # ✅ FIX QUAN TRỌNG: cd vào demo
       - name: Build Maven
-        run: mvn clean package -DskipTests
+        run: |
+          cd demo
+          mvn clean package -DskipTests
 
-      # 4. TEST
       - name: Run Test
-        run: mvn test
+        run: |
+          cd demo
+          mvn test
 
-      # 5. BUILD DOCKER
       - name: Docker build
-        run: docker build -t demo-app .
+        run: |
+          cd demo
+          docker build -t demo-app .
 
   deploy-staging:
     needs: build-test-docker
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy Staging
-        run: echo "Deploy to STAGING success"
+      - run: echo "Deploy staging..."
 
   deploy-production:
     needs: deploy-staging
     runs-on: ubuntu-latest
 
     environment:
-      name: production   # 👈 manual approval
+      name: production
 
     steps:
-      - name: Deploy Production
-        run: echo "Deploy to PRODUCTION success"
+      - run: echo "Deploy production..."
